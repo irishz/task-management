@@ -22,7 +22,8 @@ function Navbar() {
   const authCtx = useContext(AuthContext);
 
   function handleLogout() {
-    
+    localStorage.removeItem("token");
+    authCtx.setuserToken("");
   }
 
   return (
@@ -59,7 +60,11 @@ function Navbar() {
         <Menu>
           <MenuButton as={IconButton} icon={<MdSettings />} variant="unstyle" />
           <MenuList color={"gray.600"}>
-            <MenuItem color={"red"} icon={<BiLogOut size={"1.2em"}/>} onClick={handleLogout}>
+            <MenuItem
+              color={"red"}
+              icon={<BiLogOut size={"1.2em"} />}
+              onClick={handleLogout}
+            >
               ออกจากระบบ
             </MenuItem>
           </MenuList>

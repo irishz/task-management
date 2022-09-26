@@ -33,21 +33,26 @@ function Login(props) {
   const navigate = useNavigate();
 
   function onsubmit(data) {
-    axios.post(variables.API_URL + "users/login", data).then((res) => {
-      if (res.data.msg === "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง") {
-        toast({
-          title: "เกิดข้อผิดพลาด",
-          description: res.data.msg,
-          status: "error",
-          duration: 4000,
-        });
-        return;
-      }
-      const token = res.data.data.token;
-      localStorage.setItem("token", token);
-      props.setuserToken(token);
-      navigate("/", { replace: true });
-    });
+    axios
+      .post(variables.API_URL + "users/login", data)
+      .then((res) => {
+        if (res.data.msg === "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง") {
+          toast({
+            title: "เกิดข้อผิดพลาด",
+            description: res.data.msg,
+            status: "error",
+            duration: 4000,
+          });
+          return;
+        }
+        const token = res.data.data.token;
+        localStorage.setItem("token", token);
+        props.setuserToken(token);
+        navigate("/", { replace: true });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   return (
@@ -56,7 +61,6 @@ function Login(props) {
         flexDirection="column"
         w="100wh"
         h="100vh"
-
         bgGradient="linear(to-br, #439cfb, #f187fb)"
         justifyContent="center"
         alignItems="center"
@@ -87,6 +91,7 @@ function Login(props) {
                   message: "รหัสพนักงานเป็นตัวเลข 7 หลัก",
                 },
               })}
+              bgColor={"whiteAlpha.700"}
               borderColor={"whiteAlpha.600"}
               type={"text"}
               autoFocus
@@ -102,6 +107,7 @@ function Login(props) {
                 required: "กรุณาใส่รหัสผ่าน",
                 minLength: { value: 6, message: "รหัสผ่านขั้นต่ำ 6 ตัวอักษร" },
               })}
+              bgColor={"whiteAlpha.700"}
               borderColor={"whiteAlpha.600"}
               type={"password"}
             />

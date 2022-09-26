@@ -20,7 +20,7 @@ const registerUser = asyncHandler(async (req, res) => {
     role,
     department,
     password: hashedPassword,
-    employee_code
+    employee_code,
   });
 
   if (user) {
@@ -42,24 +42,28 @@ const loginUser = asyncHandler(async (req, res) => {
   const { employee_code, password } = req.body;
   const user = await User.findOne({ employee_code });
 
-    // Check User
-  if (user && (await bcrypt.compare(password, user.password))) {
-    return res.json({ msg: "Login User", data: {
+  // Check User
+  if (user && bcrypt.compare(password, user.password)) {
+    return res.json({
+      msg: "Login User",
+      data: {
         _id: user.id,
         employee_code: user.employee_code,
         name: user.name,
         role: user.role,
-        token: generateToken(user._id)
-    } });
+        token: generateToken(user._id),
+      },
+    });
   }
   res.json({ msg: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง" });
 });
 
 const generateToken = (id) => {
-    return jwt.sign({id}, process.env.JWT_SECRET, {
-        expiresIn: '7d'
-    });
-}
+  console.log(process.env.JWT_SECRET);
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: "7d",
+  });
+};
 
 const getAllUser = (req, res, next) => {
   User.find((error, data) => {
