@@ -9,6 +9,7 @@ import Unauthorized from "./Unauthorized";
 import jwtDecode from "jwt-decode";
 import { variables } from "./Variables";
 import axios from "axios";
+import JobCreate from "./components/Home/JobCreate";
 
 function App() {
   const [userToken, setuserToken] = useState(localStorage.getItem("token"));
@@ -21,7 +22,7 @@ function App() {
     let userId = "";
     if (token) {
       const tokenDecoded = jwtDecode(token);
-      console.log(tokenDecoded);
+      // console.log(tokenDecoded);
       userId = tokenDecoded.id;
     }
     axios
@@ -31,7 +32,11 @@ function App() {
       .then((res) => {
         setuserData(res.data);
       });
-  }, []);
+    return () => {
+      setuserData({});
+      setuserToken(null);
+    };
+  }, [userToken]);
 
   if (!userToken) {
     return <Login setuserToken={setuserToken}></Login>;
@@ -39,14 +44,26 @@ function App() {
 
   return (
     <AuthContext.Provider
-      value={{ setuserToken: setuserToken, userToken, userData }}
+      value={{
+        userToken,
+        setuserToken: setuserToken,
+        userData,
+        setuserData: setuserData,
+      }}
     >
       <Box>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/unauth" element={<Unauthorized />} />
-          <Route path="/admin" element={<AdminHome />} />
-        </Routes>
+        {userData.role === "normal" ? (
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/job/new" element={<JobCreate />} />
+            <Route path="/unauth" element={<Unauthorized />} />
+          </Routes>
+        ) : (
+          <Routes>
+            <Route path="/" element={<AdminHome />} />
+            <Route path="/unauth" element={<Unauthorized />} />
+          </Routes>
+        )}
       </Box>
     </AuthContext.Provider>
   );

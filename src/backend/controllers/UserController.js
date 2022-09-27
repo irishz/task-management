@@ -86,15 +86,15 @@ const getOneUser = (req, res) => {
 };
 
 const updateUser = asyncHandler(async (req, res) => {
-  const { name } = req.body;
-  const nameExist = await User.findOne({ name });
-  if (nameExist) {
-    res.json({ msg: "ชื่อนี้มีในระบบอยู่แล้ว" });
+  const { employee_code } = req.body;
+  const empCodeExist = await User.findOne({ employee_code });
+  if (empCodeExist) {
+    res.json({ msg: "รหัสพนักงานนี้มีในระบบอยู่แล้ว" });
     return;
   }
   User.findByIdAndUpdate(req.params.id, { $set: req.body }, (error, data) => {
     if (data) {
-      res.json({ msg: "อัพเดทข้อมูลาำเร็จ" });
+      res.json({ msg: "อัพเดทข้อมูลสำเร็จ" });
       return;
     }
     throw new Error("ไม่พบข้อมูล");

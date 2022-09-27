@@ -23,7 +23,7 @@ function Navbar() {
 
   function handleLogout() {
     localStorage.removeItem("token");
-    authCtx.setuserToken("");
+    authCtx.setuserToken(null);
   }
 
   return (
@@ -56,13 +56,19 @@ function Navbar() {
               </Link>
             ))}
       </Flex>
-      <Flex>
+      <Flex gap={2} alignItems="center">
+        <Text>{authCtx.userData.name}</Text>
         <Menu>
-          <MenuButton as={IconButton} icon={<MdSettings />} variant="unstyle" />
+          <MenuButton
+            as={IconButton}
+            icon={<MdSettings size={20} />}
+            variant="ghost"
+            _hover={{ bgColor: "blackAlpha.300" }}
+          />
           <MenuList color={"gray.600"}>
             <MenuItem
               color={"red"}
-              icon={<BiLogOut size={"1.2em"} />}
+              icon={<BiLogOut size={"1.5em"} />}
               onClick={handleLogout}
             >
               ออกจากระบบ

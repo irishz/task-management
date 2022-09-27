@@ -95,6 +95,7 @@ function Login(props) {
               borderColor={"whiteAlpha.600"}
               type={"text"}
               autoFocus
+              maxLength={7}
             />
             <FormHelperText color={"red"}>
               {errors.employee_code?.message}

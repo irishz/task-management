@@ -4,13 +4,13 @@ let cors = require("cors");
 let bodyParser = require("body-parser");
 const dotenv = require("dotenv").config();
 let port = process.env.PORT;
-
+const db = process.env.DATABASE
 const userRoute = require("./route/user.routes");
-// const zoneRoute = require("./route/zone.routes");
+const jobRoute = require("./route/job.route");
 
 mongoose.Promise = global.Promise;
 mongoose
-  .connect("mongodb://127.0.0.1:27017/task?retryWrites=true&w=majority", {
+  .connect("mongodb://127.0.0.1:27017/job?retryWrites=true&w=majority", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
@@ -32,7 +32,7 @@ app.use(
 );
 app.use(cors());
 app.use("/users", userRoute);
-// app.use("/zone", zoneRoute);
+app.use("/job", jobRoute);
 
 app.listen(port, "0.0.0.0", () => {
   console.log("Connected to port " + port);

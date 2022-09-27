@@ -1,4 +1,4 @@
-import { AiFillHome } from "react-icons/ai";
+import { HiHome } from "react-icons/hi";
 
 const NavbarMenuList = {
   admin: [
@@ -6,7 +6,7 @@ const NavbarMenuList = {
       name: "admin-home",
       name_th: "หน้าแรก",
       url: "/admin",
-      icon: <AiFillHome />,
+      icon: <HiHome size="1.2em" />,
     },
   ],
   user: [
@@ -14,12 +14,12 @@ const NavbarMenuList = {
       name: "home",
       name_th: "หน้าแรก",
       url: "/",
-      icon: <AiFillHome />,
+      icon: <HiHome size="1.2em" />,
     },
     {
-      name: "task-new",
+      name: "job-new",
       name_th: "ร้องของานใหม่",
-      url: "/task/new",
+      url: "/job/new",
     },
   ],
 };
