@@ -12,6 +12,9 @@ const userSchema = new Schema(
       required: [true, "กรุณาใส่รหัสพนักงาน"],
       unique: true,
     },
+    email: {
+      type: String,
+    },
     department: {
       type: String,
     },

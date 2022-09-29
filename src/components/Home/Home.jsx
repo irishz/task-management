@@ -3,16 +3,27 @@ import { variables } from "../../Variables";
 import axios from "axios";
 import {
   Box,
+  Button,
   Container,
   Heading,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Table,
   TableCaption,
   TableContainer,
   Tbody,
   Td,
+  Text,
   Th,
   Thead,
   Tr,
+  useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import Navbar from "../Navbar/Navbar";
 import AuthContext from "../Context/AuthContext";
@@ -22,17 +33,19 @@ import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 function Home() {
   const [jobList, setjobList] = useState([]);
   const [user, setuser] = useState("");
+  const [isJobDelete, setisJobDelete] = useState(false);
   const authCtx = useContext(AuthContext);
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
 
   useEffect(() => {
     const userId = authCtx.userData?._id;
     if (userId) {
       axios.get(variables.API_URL + `job/user/${userId}`).then((res) => {
-        console.table(res.data);
         setjobList(res.data);
       });
     }
-  }, []);
+  }, [isJobDelete]);
 
   function getUserData(userId) {
     axios
@@ -45,6 +58,24 @@ function Home() {
     return user;
   }
 
+  function processDeleteJob(job_id) {
+    const jobToDelete = jobList.find((job) => job._id === job_id);
+    axios
+      .delete(variables.API_URL + `job/${jobToDelete._id}`)
+      .then((res) => {
+        toast({
+          title: res.data.msg,
+          status: "success",
+          duration: 3000,
+          isClosable: true,
+        });
+        setisJobDelete(true);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
   return (
     <Box>
       <Navbar />
@@ -55,21 +86,21 @@ function Home() {
           ยินดีต้อนรับ, คุณ{authCtx.userData.name}
         </Heading>
 
-        <TableContainer>
+        <TableContainer display={'block'} overflowX="auto" whiteSpace={'break-spaces'}>
           <Table variant={"striped"} size="sm">
             <TableCaption>งานทั้งหมด: {jobList.length}</TableCaption>
             <Thead>
               <Tr>
                 <Th>ลำดับ</Th>
-                <Th>Job No.</Th>
+                <Th>JobNo</Th>
                 <Th>หัวข้อ</Th>
                 <Th>รายละเอียด 1</Th>
                 <Th>รายละเอียด 2</Th>
                 <Th>ผู้ร้องขอ</Th>
                 <Th>แผนก</Th>
                 <Th>Ref loss no</Th>
-                <Th>มูลค่า Loss</Th>
                 <Th>Share Cost</Th>
+                <Th>สถานะ</Th>
                 <Th>สร้างเมื่อ</Th>
                 <Th></Th>
               </Tr>
@@ -80,15 +111,19 @@ function Home() {
                   <Td textAlign={"center"}>{idx + 1}</Td>
                   <Td textAlign={"center"}>{job.job_no}</Td>
                   <Td textAlign={"center"}>{job.topic}</Td>
-                  <Td textAlign={"center"}>{job.job_detail_1}</Td>
-                  <Td>{job.job_detail_2}</Td>
+                  <Td>
+                    <Text noOfLines={2}>{job.job_detail_1}</Text>
+                  </Td>
+                  <Td>
+                    <Text noOfLines={2}>{job.job_detail_2}</Text>
+                  </Td>
                   <Td>{getUserData(job.staff_req).name}</Td>
                   <Td>{job.department_req}</Td>
-                  <Td isNumeric>{job.ref_loss_no}</Td>
-                  <Td isNumeric>{job.cost}</Td>
+                  <Td>{job.ref_loss_cost_reduction}</Td>
                   <Td isNumeric>{job.share_cost}</Td>
+                  <Td>{job.status}</Td>
                   <Td>{moment(job.createdAt).format("DD/MM/YYYY HH:mm")}</Td>
-                  <Td display="inline-block">
+                  <Td display="inline-flex">
                     <EditIcon
                       w={4}
                       h={4}
@@ -102,8 +137,36 @@ function Home() {
                       h={4}
                       color="red"
                       _hover={{ color: "red.300" }}
-                      // onClick={() => handleEditDeleteClick(data.id, "delete")}
+                      onClick={onOpen}
                     />
+                    <Modal isOpen={isOpen} onClose={onClose}>
+                      <ModalOverlay />
+                      <ModalContent>
+                        <ModalHeader>ยืนยันการลบ Job</ModalHeader>
+                        <ModalCloseButton />
+                        <ModalBody>
+                          <Text>
+                            Job No : <strong>{job.job_no}</strong>
+                          </Text>
+                          <Text>
+                            Topic : <strong>{job.topic}</strong>
+                          </Text>
+                        </ModalBody>
+                        <ModalFooter display={"flex"} gap={3}>
+                          <Button
+                            variant={"solid"}
+                            colorScheme="red"
+                            leftIcon={<DeleteIcon />}
+                            onClick={() => processDeleteJob(job._id)}
+                          >
+                            ลบ
+                          </Button>
+                          <Button variant={"outline"} onClick={onClose}>
+                            ยกเลิก
+                          </Button>
+                        </ModalFooter>
+                      </ModalContent>
+                    </Modal>
                   </Td>
                 </Tr>
               ))}

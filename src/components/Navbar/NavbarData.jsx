@@ -1,12 +1,32 @@
 import { HiHome } from "react-icons/hi";
-
+import { FaTasks } from "react-icons/fa";
+import { HiDocumentReport } from "react-icons/hi";
+import { GoChecklist } from "react-icons/go";
 const NavbarMenuList = {
   admin: [
     {
       name: "admin-home",
       name_th: "หน้าแรก",
-      url: "/admin",
+      url: "/",
       icon: <HiHome size="1.2em" />,
+    },
+    {
+      name: "my-job",
+      name_th: "งานของฉัน",
+      url: "/job-me",
+      icon: <FaTasks size="1.2em" />,
+    },
+    {
+      name: "waiting approve",
+      name_th: "รอการอนุมัติ",
+      url: "/approve",
+      icon: <GoChecklist size="1.2em" />,
+    },
+    {
+      name: "report",
+      name_th: "ดูรายงาน",
+      url: "/report",
+      icon: <HiDocumentReport size="1.2em" />,
     },
   ],
   user: [
@@ -24,4 +44,4 @@ const NavbarMenuList = {
   ],
 };
 
-export default NavbarMenuList
+export default NavbarMenuList;

@@ -1,13 +1,16 @@
-import { Box } from "@chakra-ui/react";
+import { Box, Container, Flex, Text } from "@chakra-ui/react";
 import React from "react";
-import Navbar from "../Navbar/Navbar";
+import AdminNav from "../Navbar/AdminNav";
 
 function AdminHome() {
   return (
-    <Box>
-      <Navbar />
-      AdminHome
-    </Box>
+    <Flex>
+      <AdminNav />
+
+        <Box>
+            <Text>teet</Text>
+        </Box>
+    </Flex>
   );
 }
 

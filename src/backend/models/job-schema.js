@@ -15,7 +15,6 @@ const JobSchema = new Schema(
     },
     job_detail_1: {
       type: String,
-      required: true,
     },
     job_detail_2: {
       type: String,
@@ -32,12 +31,8 @@ const JobSchema = new Schema(
     attachment: {
       type: Buffer,
     },
-    ref_loss_no: {
-      type: Number,
-      required: true,
-    },
-    cost: {
-      type: Number,
+    ref_loss_cost_reduction: {
+      type: String,
       required: true,
     },
     share_cost: {

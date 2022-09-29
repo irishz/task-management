@@ -43,7 +43,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const user = await User.findOne({ employee_code });
 
   // Check User
-  if (user && bcrypt.compare(password, user.password)) {
+  if (user && bcrypt.compareSync(password, user.password)) {
     return res.json({
       msg: "Login User",
       data: {
@@ -58,8 +58,12 @@ const loginUser = asyncHandler(async (req, res) => {
   res.json({ msg: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง" });
 });
 
+const checkPassword = () => {
+  return
+}
+
 const generateToken = (id) => {
-  console.log(process.env.JWT_SECRET);
+  // console.log(process.env.JWT_SECRET);
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: "7d",
   });

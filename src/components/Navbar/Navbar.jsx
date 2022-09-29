@@ -1,9 +1,5 @@
 import {
-  Box,
-  Button,
-  color,
   Flex,
-  Icon,
   IconButton,
   Menu,
   MenuButton,
@@ -11,7 +7,7 @@ import {
   MenuList,
   Text,
 } from "@chakra-ui/react";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext} from "react";
 import NavbarMenuList from "./NavbarData";
 import AuthContext from "../Context/AuthContext";
 import { Link } from "react-router-dom";
@@ -37,7 +33,23 @@ function Navbar() {
     >
       <Flex gap={3}>
         {authCtx.userData?.role === "admin"
-          ? "admin"
+          ? NavbarMenuList.admin.map((menu) => (
+            <Link to={menu.url} key={menu.name}>
+              <Text
+                display="inline-flex"
+                alignItems={"center"}
+                gap={1}
+                p={2}
+                _hover={{
+                  bgColor: "#1785FB",
+                  borderRadius: 5,
+                }}
+              >
+                {menu.icon}
+                {menu.name_th}
+              </Text>
+            </Link>
+          ))
           : NavbarMenuList.user.map((menu) => (
               <Link to={menu.url} key={menu.name}>
                 <Text

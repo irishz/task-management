@@ -10,6 +10,9 @@ import jwtDecode from "jwt-decode";
 import { variables } from "./Variables";
 import axios from "axios";
 import JobCreate from "./components/Home/JobCreate";
+import MyJob from "./components/AdminJob/MyJob";
+import Report from "./components/AdminJob/Report";
+import WaitingApprove from "./components/AdminJob/WaitingApprove";
 
 function App() {
   const [userToken, setuserToken] = useState(localStorage.getItem("token"));
@@ -61,6 +64,9 @@ function App() {
         ) : (
           <Routes>
             <Route path="/" element={<AdminHome />} />
+            <Route path="/job-me" element={<MyJob />} />
+            <Route path="/report" element={<Report />} />
+            <Route path="/approve" element={<WaitingApprove />} />
             <Route path="/unauth" element={<Unauthorized />} />
           </Routes>
         )}
