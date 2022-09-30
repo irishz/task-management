@@ -59,8 +59,8 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const checkPassword = () => {
-  return
-}
+  return;
+};
 
 const generateToken = (id) => {
   // console.log(process.env.JWT_SECRET);
@@ -85,7 +85,7 @@ const getOneUser = (req, res) => {
       res.json(data);
       return;
     }
-    res.json({ msg: "ไม่พบผู้ใช้" });
+    res.json({ msg: "ไม่พบผู้ใช้", data: error });
   });
 };
 

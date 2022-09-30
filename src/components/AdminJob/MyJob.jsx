@@ -18,7 +18,6 @@ function MyJob() {
 
   return (
     <Flex>
-      <AdminNav />
       <Flex mt={3}>
         <Heading color={"gray.600"} fontSize="2xl">
           My Job

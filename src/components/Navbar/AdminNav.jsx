@@ -1,26 +1,31 @@
 import {
   Avatar,
+  Badge,
   Box,
   Button,
+  Circle,
   Divider,
   Flex,
+  FormControl,
+  FormLabel,
   Heading,
+  Input,
   List,
   ListItem,
   Stack,
   Text,
 } from "@chakra-ui/react";
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import AuthContext from "../Context/AuthContext";
 import { BiLogOut } from "react-icons/bi";
 import { Link, useLocation } from "react-router-dom";
 import NavbarMenuList from "./NavbarData";
+import JobContext from "../Context/JobContext";
 
 function AdminNav() {
   const authCtx = useContext(AuthContext);
+  const jobCtx = useContext(JobContext);
   const location = useLocation();
-
-    
 
   function handleLogout() {
     localStorage.removeItem("token");
@@ -29,19 +34,21 @@ function AdminNav() {
 
   return (
     <Flex
+      left={0}
+      top={0}
       w={"15%"}
       flexDirection={"column"}
       justifyContent={"space-between"}
       h="100vh"
       bgColor="gray.800"
-      mr={3}
+      position={"sticky"}
     >
       {/* Nav Header */}
       <Flex justifyContent={"center"}>
         <Heading
           bgGradient="linear(to-r, #1E6C8E, #2E7775)"
           bgClip={"text"}
-          fontSize={24}
+          fontSize={20}
           my={3}
         >
           Job Management
@@ -58,9 +65,7 @@ function AdminNav() {
                 gap={2}
                 color="white"
                 bgColor={
-                  location.pathname === menu.url
-                    ? "whiteAlpha.600"
-                    : null
+                  location.pathname === menu.url ? "whiteAlpha.600" : null
                 }
                 alignItems={"center"}
                 borderRadius={5}
@@ -70,6 +75,9 @@ function AdminNav() {
               >
                 {menu.icon}
                 {menu.name_th}
+                {menu.name === "waiting approve" ? (
+                  <Badge bgColor="tomato" color='white'>{jobCtx.jobApproveCount}</Badge>
+                ) : null}
               </Text>
             </Link>
           ))}

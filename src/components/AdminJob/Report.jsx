@@ -5,7 +5,6 @@ import AdminNav from "../Navbar/AdminNav";
 function Report() {
   return (
     <Flex>
-      <AdminNav />
       Report
     </Flex>
   );

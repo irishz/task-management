@@ -28,9 +28,11 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { variables } from "../../Variables";
 import { useNavigate } from "react-router-dom";
+import JobContext from "../Context/JobContext";
 
 function JobCreate() {
   const authCtx = useContext(AuthContext);
+  const jobCtx = useContext(JobContext);
   const [isLoading, setisLoading] = useState(false);
   const {
     register,
@@ -70,6 +72,7 @@ function JobCreate() {
           setTimeout(() => {
             navigate(-1);
           }, 3000);
+          jobCtx.increaseJobApproveCount();
           return;
         }
       })
@@ -86,7 +89,6 @@ function JobCreate() {
 
   return (
     <Box>
-      <Navbar />
       <Container maxW={["container.sm", "container.md", "container.lg"]} p={5}>
         <Stack
           borderWidth={1}

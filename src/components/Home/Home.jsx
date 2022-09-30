@@ -25,17 +25,18 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import Navbar from "../Navbar/Navbar";
 import AuthContext from "../Context/AuthContext";
 import moment from "moment";
 import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
+import JobContext from "../Context/JobContext";
 
 function Home() {
   const [jobList, setjobList] = useState([]);
-  const [user, setuser] = useState("");
   const [isJobDelete, setisJobDelete] = useState(false);
   const authCtx = useContext(AuthContext);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const jobCtx = useContext(JobContext);
+  const { isOpen, onOpen, onClose } =
+    useDisclosure();
   const toast = useToast();
 
   useEffect(() => {
@@ -46,17 +47,6 @@ function Home() {
       });
     }
   }, [isJobDelete]);
-
-  function getUserData(userId) {
-    axios
-      .get(variables.API_URL + `users/${userId}`, {
-        headers: { Authorization: `Bearer ${authCtx.userToken}` },
-      })
-      .then((res) => {
-        setuser(res.data);
-      });
-    return user;
-  }
 
   function processDeleteJob(job_id) {
     const jobToDelete = jobList.find((job) => job._id === job_id);
@@ -70,15 +60,16 @@ function Home() {
           isClosable: true,
         });
         setisJobDelete(true);
+        jobCtx.decreaseJobApproveCount();
       })
       .catch((err) => {
         console.log(err);
       });
+    onClose();
   }
 
   return (
     <Box>
-      <Navbar />
       <Container
         maxW={["container.sm", "container.md", "container.lg", "container.xl"]}
       >
@@ -86,7 +77,11 @@ function Home() {
           ยินดีต้อนรับ, คุณ{authCtx.userData.name}
         </Heading>
 
-        <TableContainer display={'block'} overflowX="auto" whiteSpace={'break-spaces'}>
+        <TableContainer
+          display={"block"}
+          overflowX="auto"
+          whiteSpace={"break-spaces"}
+        >
           <Table variant={"striped"} size="sm">
             <TableCaption>งานทั้งหมด: {jobList.length}</TableCaption>
             <Thead>
@@ -117,7 +112,7 @@ function Home() {
                   <Td>
                     <Text noOfLines={2}>{job.job_detail_2}</Text>
                   </Td>
-                  <Td>{getUserData(job.staff_req).name}</Td>
+                  <Td>{job.staff_req}</Td>
                   <Td>{job.department_req}</Td>
                   <Td>{job.ref_loss_cost_reduction}</Td>
                   <Td isNumeric>{job.share_cost}</Td>
@@ -140,7 +135,7 @@ function Home() {
                       onClick={onOpen}
                     />
                     <Modal isOpen={isOpen} onClose={onClose}>
-                      <ModalOverlay />
+                      <ModalOverlay bgColor={"blackAlpha.200"} />
                       <ModalContent>
                         <ModalHeader>ยืนยันการลบ Job</ModalHeader>
                         <ModalCloseButton />
