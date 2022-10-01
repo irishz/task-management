@@ -11,26 +11,22 @@ import {
   GridItem,
   Heading,
   Input,
-  InputAddon,
   InputGroup,
   InputRightAddon,
   Stack,
-  Text,
   Textarea,
-  useDisclosure,
   useToast,
 } from "@chakra-ui/react";
 import React, { useContext, useState } from "react";
 import AuthContext from "../Context/AuthContext";
-import Navbar from "../Navbar/Navbar";
 import { AddIcon } from "@chakra-ui/icons";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import { variables } from "../../Variables";
 import { useNavigate } from "react-router-dom";
 import JobContext from "../Context/JobContext";
 
 function JobCreate() {
+  const API_URL = import.meta.env.VITE_API_URL
   const authCtx = useContext(AuthContext);
   const jobCtx = useContext(JobContext);
   const [isLoading, setisLoading] = useState(false);
@@ -59,7 +55,7 @@ function JobCreate() {
     // console.log(formData);
     setisLoading(true);
     axios
-      .post(variables.API_URL + "job", formData)
+      .post(API_URL + "job", formData)
       .then((res) => {
         if (res) {
           toast({

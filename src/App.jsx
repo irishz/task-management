@@ -7,17 +7,17 @@ import AdminHome from "./components/AdminHome/AdminHome";
 import Home from "./components/Home/Home";
 import MyJob from "./components/AdminJob/MyJob";
 import Report from "./components/AdminJob/Report";
-import WaitingApprove from "./components/AdminJob/WaitingApprove";
+import JobApprove from "./components/AdminJob/JobApprove";
 import AuthContext from "./components/Context/AuthContext";
 import JobCreate from "./components/Home/JobCreate";
 import Login from "./components/Login/Login";
 import AdminNav from "./components/Navbar/AdminNav";
 import Navbar from "./components/Navbar/Navbar";
 import Unauthorized from "./Unauthorized";
-import { variables } from "./Variables";
 import JobContext from "./components/Context/JobContext";
 
 function App() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [userToken, setuserToken] = useState(localStorage.getItem("token"));
   const [userData, setuserData] = useState({});
   const [jobApproveCount, setjobApproveCount] = useState(0);
@@ -29,19 +29,20 @@ function App() {
       increaseJobApproveCount,
       decreaseJobApproveCount,
     }),
-    [jobApproveCount, setjobApproveCount]
+    [
+      jobApproveCount,
+      setjobApproveCount,
+      increaseJobApproveCount,
+      decreaseJobApproveCount,
+    ]
   );
 
   function increaseJobApproveCount() {
-    setjobApproveCount(jobApproveCount++);
+    setjobApproveCount(jobApproveCount + 1);
   }
   function decreaseJobApproveCount() {
-    setjobApproveCount(jobApproveCount--);
+    setjobApproveCount(jobApproveCount - 1);
   }
-
-  useEffect(() => {
-    console.log(`job approve change: ${jobApproveCount}`);
-  }, [jobApproveCount]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -54,7 +55,7 @@ function App() {
       userId = tokenDecoded.id;
     }
     axios
-      .get(variables.API_URL + `users/${userId}`, {
+      .get(API_URL + `users/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {
@@ -62,7 +63,8 @@ function App() {
       });
 
     //Get Job Count
-    axios.get(variables.API_URL + "job/approveby").then((res) => {
+    axios.get(API_URL + "job/approveby").then((res) => {
+      // console.log(res.data)
       let jobCount = res.data.length;
       setjobApproveCount(jobCount);
     });
@@ -100,7 +102,7 @@ function App() {
                 <Route path="/" element={<AdminHome />} />
                 <Route path="/job-me" element={<MyJob />} />
                 <Route path="/report" element={<Report />} />
-                <Route path="/approve" element={<WaitingApprove />} />
+                <Route path="/approve" element={<JobApprove />} />
                 <Route path="/unauth" element={<Unauthorized />} />
               </Routes>
             )}

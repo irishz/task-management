@@ -15,10 +15,10 @@ import {
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import axios from "axios";
-import { variables } from "../../Variables";
 import { useNavigate } from "react-router-dom";
 
 function Login(props) {
+  const API_URL = import.meta.env.VITE_API_URL
   const {
     register,
     handleSubmit,
@@ -34,7 +34,7 @@ function Login(props) {
 
   function onsubmit(data) {
     axios
-      .post(variables.API_URL + "users/login", data)
+      .post(API_URL + "users/login", data)
       .then((res) => {
         if (res.data.msg === "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง") {
           toast({

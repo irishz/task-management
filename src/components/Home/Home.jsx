@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useContext } from "react";
-import { variables } from "../../Variables";
 import axios from "axios";
 import {
   Box,
@@ -31,6 +30,7 @@ import { DeleteIcon, EditIcon } from "@chakra-ui/icons";
 import JobContext from "../Context/JobContext";
 
 function Home() {
+  const API_URL = import.meta.env.VITE_API_URL
   const [jobList, setjobList] = useState([]);
   const [isJobDelete, setisJobDelete] = useState(false);
   const authCtx = useContext(AuthContext);
@@ -42,16 +42,16 @@ function Home() {
   useEffect(() => {
     const userId = authCtx.userData?._id;
     if (userId) {
-      axios.get(variables.API_URL + `job/user/${userId}`).then((res) => {
+      axios.get(API_URL + `job/user/${userId}`).then((res) => {
         setjobList(res.data);
       });
     }
   }, [isJobDelete]);
 
   function processDeleteJob(job_id) {
-    const jobToDelete = jobList.find((job) => job._id === job_id);
+    const jobToDeleteId = jobList.find((job) => job._id === job_id)?._id;
     axios
-      .delete(variables.API_URL + `job/${jobToDelete._id}`)
+      .delete(API_URL + `job/${jobToDeleteId}`)
       .then((res) => {
         toast({
           title: res.data.msg,

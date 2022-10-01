@@ -20,23 +20,34 @@ import {
   PopoverTrigger,
   Portal,
   Skeleton,
+  Spinner,
   Stack,
   Text,
   Textarea,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
 import moment from "moment";
-import React, { useEffect, useState } from "react";
-import { variables } from "../../Variables";
+import React, { useContext, useEffect, useState } from "react";
+import JobContext from "../Context/JobContext";
 
-function WaitingApprove() {
+function JobApprove() {
+  const API_URL = import.meta.env.VITE_API_URL;
   const [jobList, setjobList] = useState([]);
-  const [selectedItem, setselectedItem] = useState("");
   const [jobListSelected, setjobListSelected] = useState({});
+  const [selectedItem, setselectedItem] = useState("");
+  const [isLoading, setisLoading] = useState(false);
+  const [isBtnApproveLoading, setisBtnApproveLoading] = useState(false);
+  const [reason, setreason] = useState("");
+
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
+  const jobCtx = useContext(JobContext);
 
   useEffect(() => {
-    axios.get(variables.API_URL + "job/approveby").then((res) => {
+    console.log("fetch data");
+    axios.get(API_URL + "job/approveby").then((res) => {
       // console.log(res.data);
       setjobList(res.data);
     });
@@ -44,6 +55,19 @@ function WaitingApprove() {
     return () => {
       setjobList([]);
       setselectedItem("");
+    };
+  }, [isBtnApproveLoading]);
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      axios.get(API_URL + "job/approveby").then((res) => {
+        // console.log(res.data);
+        setjobList(res.data);
+      });
+    }, 3000);
+
+    return () => {
+      clearInterval(intervalId);
     };
   }, []);
 
@@ -56,8 +80,82 @@ function WaitingApprove() {
     setselectedItem(job_id);
   }
 
-  function handleApproveButtonClick() {
+  async function handleApproveButtonClick(jobId) {
     console.log("approve");
+    let job_no = "";
+    let changeStatusJob = false;
+    let insertJobTrans = false;
+    let err_msg;
+    setisBtnApproveLoading(true);
+    await axios
+      .put(API_URL + `job/${jobId}`, { status: "approved" })
+      .then((res) => {
+        if (res.status === 200) {
+          job_no = res.data?.job_no;
+          jobCtx.decreaseJobApproveCount();
+          changeStatusJob = true;
+          return;
+        }
+      });
+
+    //TODO insert to job transaction table
+    
+
+    console.log(changeStatusJob, insertJobTrans, job_no);
+    if (changeStatusJob && insertJobTrans) {
+      toast({
+        title: `อนุมัติ Job หมายเลข ${job_no} สำเร็จ`,
+        status: "success",
+        position: "bottom-right",
+        isClosable: true,
+        duration: 3000,
+      });
+      setselectedItem("");
+      setisBtnApproveLoading(false);
+      return;
+    }
+    if (!changeStatusJob && !insertJobTrans) {
+      err_msg = "ไม่สามารถอัพเดทและบันทึก job";
+    } else if (!changeStatusJob) {
+      err_msg = "อัพเดท job status ไม่สำเร็จ!";
+    } else if (!insertJobTrans) {
+      err_msg = "ไม่สามารถบันทึก job!";
+    }
+    toast({
+      title: "เกิดข้อผิดพลาดบางอย่าง",
+      description: err_msg,
+      status: "error",
+      isClosable: true,
+      duration: 99999,
+      onCloseComplete: () => {
+        setisBtnApproveLoading(false);
+      },
+    });
+  }
+
+  function handleRejectButtonClick(jobId) {
+    //TODO change job status to 'rejected' and reason
+    //TODO insert to job transaction table
+    console.log(`reject : ${reason}`);
+    setisLoading(true);
+    onClose();
+
+    setTimeout(() => {
+      //Reset
+      setreason("");
+      toast({
+        title: "อนุมัติสำเร็จ",
+        status: "success",
+        isClosable: true,
+        duration: 3000,
+        position: "bottom-right",
+      });
+      setisLoading(false);
+    }, 3000);
+  }
+
+  function handleReasonInputChange(value) {
+    setreason(value);
   }
 
   return (
@@ -113,7 +211,15 @@ function WaitingApprove() {
                   <>
                     <MyContent
                       jobData={jobListSelected}
-                      onApprove={handleApproveButtonClick}
+                      handleApproveButtonClick={handleApproveButtonClick}
+                      handleRejectButtonClick={handleRejectButtonClick}
+                      handleReasonInputChange={handleReasonInputChange}
+                      reason={reason}
+                      isLoading={isLoading}
+                      isBtnApproveLoading={isBtnApproveLoading}
+                      isOpen={isOpen}
+                      onOpen={onOpen}
+                      onClose={onClose}
                     />
                   </>
                 }
@@ -126,7 +232,7 @@ function WaitingApprove() {
   );
 }
 
-export default WaitingApprove;
+export default JobApprove;
 
 function Section({ children }) {
   return <Box pb={5}>{children}</Box>;
@@ -149,14 +255,6 @@ function MyHeading(props) {
 
 function MyContent(props) {
   let jobData = props.jobData;
-  const [reason, setreason] = useState("");
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  function handleRejectButtonClick() {
-    console.log(`reject : ${reason}`);
-    onClose();
-  }
-
   return (
     <>
       <Section
@@ -293,18 +391,28 @@ function MyContent(props) {
                   variant={"solid"}
                   colorScheme="teal"
                   leftIcon={<CheckIcon w={3} h={3} />}
-                  onClick={props.onApprove}
+                  onClick={() => props.handleApproveButtonClick(jobData._id)}
+                  isLoading={props.isBtnApproveLoading}
+                  loadingText="อนุมัติ"
                 >
                   อนุมัติ
                 </Button>
-                <Popover isOpen={isOpen} onClose={onClose}>
+                <Popover isOpen={props.isOpen} onClose={props.onClose}>
                   <PopoverTrigger>
                     <Button
                       alignItems={"center"}
                       variant={"solid"}
                       colorScheme="red"
-                      leftIcon={<CloseIcon w={3} h={3} />}
-                      onClick={onOpen}
+                      leftIcon={
+                        props.isLoading ? (
+                          <Spinner />
+                        ) : (
+                          <CloseIcon w={3} h={3} />
+                        )
+                      }
+                      onClick={props.onOpen}
+                      isLoading={props.isLoading}
+                      loadingText="ไม่อนุมัติ"
                     >
                       ไม่อนุมัติ
                     </Button>
@@ -320,14 +428,16 @@ function MyContent(props) {
                       <PopoverHeader border={"none"} color="#4ac2c0">
                         หมายเหตุ
                       </PopoverHeader>
-                      <PopoverCloseButton onClick={onClose} />
+                      <PopoverCloseButton onClick={props.onClose} />
                       <PopoverBody>
                         <FormControl>
                           <Textarea
                             borderTopRadius={"sm"}
                             borderColor="#4ac2c0"
                             size="sm"
-                            onChange={(e) => setreason(e.target.value)}
+                            onChange={(e) =>
+                              props.handleReasonInputChange(e.target.value)
+                            }
                             placeholder="ใส่หมายเหตุที่นี่..."
                           />
                         </FormControl>
@@ -342,9 +452,11 @@ function MyContent(props) {
                           color="#4ac2c0"
                           borderColor="#2d7675"
                           size={"sm"}
-                          onClick={handleRejectButtonClick}
+                          onClick={() =>
+                            props.handleRejectButtonClick(jobData._id)
+                          }
                           _hover={{ bgColor: "rgb(45, 118, 117, 0.5)" }}
-                          disabled={reason.length < 1 ? true : false}
+                          disabled={props.reason.length < 1 ? true : false}
                         >
                           ตกลง
                         </Button>

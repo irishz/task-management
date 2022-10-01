@@ -88,7 +88,7 @@ const getJobApproveBy = asyncHandler(async (req, res) => {
         return;
       }
       res.json({ msg: "เกิดข้อผิดพบพลาด ไม่พบข้อมูล" });
-    });
+    }).sort({ createdAt: 1 });
     return;
   }
   res.json({ msg: "ไม่พบข้อมูลผู้อนุมัติ" });
@@ -97,7 +97,7 @@ const getJobApproveBy = asyncHandler(async (req, res) => {
 const updateJob = asyncHandler(async (req, res) => {
   Job.findByIdAndUpdate(req.params.id, { $set: req.body }, (error, data) => {
     if (data) {
-      res.json({ msg: "อัพเดทข้อมูลสำเร็จ" });
+      res.json({ msg: "อัพเดทข้อมูลสำเร็จ", job_no: data.job_no });
       return;
     }
     res.json({ msg: error });

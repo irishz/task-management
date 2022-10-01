@@ -15,7 +15,7 @@ import {
   Stack,
   Text,
 } from "@chakra-ui/react";
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import AuthContext from "../Context/AuthContext";
 import { BiLogOut } from "react-icons/bi";
 import { Link, useLocation } from "react-router-dom";
@@ -25,12 +25,17 @@ import JobContext from "../Context/JobContext";
 function AdminNav() {
   const authCtx = useContext(AuthContext);
   const jobCtx = useContext(JobContext);
+  const [jobCount, setjobCount] = useState(jobCtx.jobApproveCount);
   const location = useLocation();
 
   function handleLogout() {
     localStorage.removeItem("token");
     authCtx.setuserToken(null);
   }
+
+  useEffect(() => {
+    setjobCount(jobCtx.jobApproveCount);
+  }, [jobCtx]);
 
   return (
     <Flex
@@ -76,7 +81,9 @@ function AdminNav() {
                 {menu.icon}
                 {menu.name_th}
                 {menu.name === "waiting approve" ? (
-                  <Badge bgColor="tomato" color='white'>{jobCtx.jobApproveCount}</Badge>
+                  <Badge bgColor="tomato" color="white">
+                    {jobCount}
+                  </Badge>
                 ) : null}
               </Text>
             </Link>
