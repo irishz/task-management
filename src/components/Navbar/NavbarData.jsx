@@ -25,8 +25,17 @@ const NavbarMenuList = {
     {
       name: "report",
       name_th: "ดูรายงาน",
-      url: "/report",
+      url: "report",
       icon: <HiDocumentReport size="1.2em" />,
+      sub_menu: [{
+        name: 'Weekly Report',
+        name_th: 'Weekly Report',
+        url: '/report-weekly',
+      },{
+        name: 'Monthly Report',
+        name_th: 'Monthly Report',
+        url: '/report-monthly',
+      }]
     },
   ],
   user: [

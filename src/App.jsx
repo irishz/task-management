@@ -6,7 +6,6 @@ import { Route, Routes } from "react-router-dom";
 import AdminHome from "./components/AdminHome/AdminHome";
 import Home from "./components/Home/Home";
 import MyJob from "./components/AdminJob/MyJob";
-import Report from "./components/AdminJob/Report";
 import JobApprove from "./components/AdminJob/JobApprove";
 import AuthContext from "./components/Context/AuthContext";
 import JobCreate from "./components/Home/JobCreate";
@@ -15,6 +14,8 @@ import AdminNav from "./components/Navbar/AdminNav";
 import Navbar from "./components/Navbar/Navbar";
 import Unauthorized from "./Unauthorized";
 import JobContext from "./components/Context/JobContext";
+import WeeklyReport from "./components/AdminReport/WeeklyReport";
+import MonthlyReport from "./components/AdminReport/MonthlyReport";
 
 function App() {
   const API_URL = import.meta.env.VITE_API_URL;
@@ -101,7 +102,8 @@ function App() {
               <Routes>
                 <Route path="/" element={<AdminHome />} />
                 <Route path="/job-me" element={<MyJob />} />
-                <Route path="/report" element={<Report />} />
+                <Route path="/report-weekly" element={<WeeklyReport />} />
+                <Route path="/report-monthly" element={<MonthlyReport />} />
                 <Route path="/approve" element={<JobApprove />} />
                 <Route path="/unauth" element={<Unauthorized />} />
               </Routes>
